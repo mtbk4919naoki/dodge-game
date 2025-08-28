@@ -37,7 +37,7 @@ export default class GameController {
       throw new Error("Canvas context not found");
     }
 
-    this.user = new User(this.ctx, {src: "/images/self.svg", w: 40, h: 40}, {speed: 8});
+    this.user = new User(this.ctx, {src: "/dodge-game/images/self.svg", w: 40, h: 40}, {speed: 8});
   }
 
   async init() {
@@ -134,7 +134,7 @@ export default class GameController {
       const actualSpawnY = -1 * spawnY;
       const actualSpeedX = 0;
       const actualSpeedY = speed;
-      const enemy = new Enemy(this.ctx, {src: "/images/enemy.svg", w: size, h: size}, {x: actualSpeedX, y: actualSpeedY});
+      const enemy = new Enemy(this.ctx, {src: "/dodge-game/images/enemy.svg", w: size, h: size}, {x: actualSpeedX, y: actualSpeedY});
       enemy.spawn(actualSpawnX, actualSpawnY, {center: true});
       this.enemies.push(enemy);
       return enemy;
@@ -144,7 +144,7 @@ export default class GameController {
       const actualSpawnY = spawnY;
       const actualSpeedX = speed * -1;
       const actualSpeedY = 0;
-      const enemy = new Enemy(this.ctx, {src: "/images/enemy.svg", w: size, h: size}, {x: actualSpeedX, y: actualSpeedY});
+      const enemy = new Enemy(this.ctx, {src: "/dodge-game/images/enemy.svg", w: size, h: size}, {x: actualSpeedX, y: actualSpeedY});
       this.enemies.push(enemy);
       enemy.spawn(actualSpawnX, actualSpawnY, {center: true});
       return enemy;
@@ -154,7 +154,7 @@ export default class GameController {
       const actualSpawnY = spawnY + this.canvas.height;
       const actualSpeedX = 0;
       const actualSpeedY = speed * -1;
-      const enemy = new Enemy(this.ctx, {src: "/images/enemy.svg", w: size, h: size}, {x: actualSpeedX, y: actualSpeedY});
+      const enemy = new Enemy(this.ctx, {src: "/dodge-game/images/enemy.svg", w: size, h: size}, {x: actualSpeedX, y: actualSpeedY});
       enemy.spawn(actualSpawnX, actualSpawnY, {center: true});
       this.enemies.push(enemy);
       return enemy;
@@ -164,7 +164,7 @@ export default class GameController {
       const actualSpawnY = spawnY;
       const actualSpeedX = speed;
       const actualSpeedY = 0;
-      const enemy = new Enemy(this.ctx, {src: "/images/enemy.svg", w: size, h: size}, {x: actualSpeedX, y: actualSpeedY});
+      const enemy = new Enemy(this.ctx, {src: "/dodge-game/images/enemy.svg", w: size, h: size}, {x: actualSpeedX, y: actualSpeedY});
       this.enemies.push(enemy);
       enemy.spawn(actualSpawnX, actualSpawnY, {center: true});
       return enemy;
