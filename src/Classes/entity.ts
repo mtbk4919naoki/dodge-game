@@ -1,0 +1,65 @@
+export default class Entity {
+  public x: number;
+  public y: number;
+  public w: number;
+  public h: number;
+  public image: HTMLImageElement;
+  public isLoaded: boolean = false;
+  public rotation: number = 0;
+
+  constructor(public ctx: CanvasRenderingContext2D, public options: {src: string, w: number, h: number}) {
+    this.w = options.w;
+    this.h = options.h;
+    this.x = 0;
+    this.y = 0;
+
+    this.image = new Image();
+    this.image.onload = () => {
+      this.isLoaded = true;
+    };
+    this.image.src = options.src;
+  }
+
+  spawn(x: number, y: number, options: {center: boolean}) {
+    if (options.center) {
+      this.x = x - this.w / 2;
+      this.y = y - this.h / 2;
+    } else {
+      this.x = x;
+      this.y = y;
+    }
+  }
+
+  move(dx: number, dy: number) {
+    this.x += dx;
+    this.y += dy;
+  }
+
+  rotate(rotation: number) {
+    this.rotation = rotation;
+  }
+
+  render(effect?: Function) {
+    this.ctx.save();
+    this.ctx.translate(this.x + this.w / 2, this.y + this.h / 2);
+    this.ctx.rotate(this.rotation);
+    if(typeof effect === "function") {
+      effect(this);
+    }
+    this.ctx.drawImage(this.image, -this.w / 2, -this.h / 2, this.w, this.h);
+    this.ctx.restore();
+  }
+
+  load(): Promise<void> {
+    return new Promise((resolve) => {
+      if (this.isLoaded) {
+        resolve();
+      } else {
+        this.image.onload = () => {
+          this.isLoaded = true;
+          resolve();
+        };
+      }
+    });
+  }
+}
