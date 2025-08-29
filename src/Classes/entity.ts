@@ -42,12 +42,17 @@ export default class Entity {
     this.rotation = rotation;
   }
 
-  render() {
+  render(callback?: (self: Entity) => void) {
     this.ctx.save();
     this.ctx.translate(this.x + this.w / 2, this.y + this.h / 2);
     this.ctx.rotate(this.rotation);
+    if (typeof callback === "function") {
+      console.log("callback");
+      callback(this);
+    }
     
     this.ctx.drawImage(this.image, -this.w / 2, -this.h / 2, this.w, this.h);
+
 
     // 色エフェクトを適用
     if (this.colorEffect) {

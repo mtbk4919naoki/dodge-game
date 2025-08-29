@@ -377,7 +377,7 @@ export default class GameController {
 
     // エンティティ表示
     if(this.keydown.Shift) {
-      this.user.render(function(self: User) {
+      this.user.render(function(self: Entity) {
         self.ctx.scale(0.6, 0.6);
       });
     } else {
