@@ -26,7 +26,7 @@ export default class GameController {
   };
   public user: User;
   private enemies: Enemy[] = [];
-  private enemyAmount: number = 20;
+  private enemyAmount: number = 10;
   public score: number = 0;
   private lastTime: number;
   private mode: typeof MODES[keyof typeof MODES];
@@ -166,7 +166,7 @@ export default class GameController {
     if (direction === 0) {
       // top to bottom
       const actualSpawnX = spawnX;
-      const actualSpawnY = -1 * spawnY - size;
+      const actualSpawnY = -1 * size;
       const actualSpeedX = 0;
       const actualSpeedY = speed;
       const enemy = new Enemy(this.ctx, {src: "/dodge-game/images/enemy.svg", w: size, h: size}, {x: actualSpeedX, y: actualSpeedY});
@@ -175,7 +175,7 @@ export default class GameController {
       return enemy;
     } else if (direction === 1) {
       // right to left
-      const actualSpawnX = spawnX + this.canvas.width + size;
+      const actualSpawnX = this.canvas.width + size;
       const actualSpawnY = spawnY;
       const actualSpeedX = speed * -1;
       const actualSpeedY = 0;
@@ -186,7 +186,7 @@ export default class GameController {
     } else if (direction === 2) {
       // bottom to top
       const actualSpawnX = spawnX;
-      const actualSpawnY = spawnY + this.canvas.height + size; // 画面下の外側に確実にスポーン
+      const actualSpawnY = this.canvas.height + size; // 画面下の外側に確実にスポーン
       const actualSpeedX = 0;
       const actualSpeedY = speed * -1;
       const enemy = new Enemy(this.ctx, {src: "/dodge-game/images/enemy.svg", w: size, h: size}, {x: actualSpeedX, y: actualSpeedY});
@@ -195,7 +195,7 @@ export default class GameController {
       return enemy;
     } else if (direction === 3) {
       // left to right
-      const actualSpawnX = spawnX - this.canvas.width - size;
+      const actualSpawnX = -1 * size;
       const actualSpawnY = spawnY;
       const actualSpeedX = speed;
       const actualSpeedY = 0;
@@ -215,8 +215,18 @@ export default class GameController {
       }
       
       // スポーン地点は8方向に散らす
-      let actualSpawnX = spawnX + offsetX * this.canvas.width + offsetX * size;
-      let actualSpawnY = spawnY + offsetY * this.canvas.height + offsetY * size;
+      let actualSpawnX = spawnX;
+      let actualSpawnY = spawnY;
+      if (offsetX === 1) {
+        actualSpawnX = this.canvas.width + size;
+      } else if (offsetX === -1) {
+        actualSpawnX = -1 * size;
+      }
+      if (offsetY === 1) {
+        actualSpawnY = this.canvas.height + size;
+      } else if (offsetY === -1) {
+        actualSpawnY = -1 * size;
+      }
   
       // 角度計算
       const targetX = this.user.x + this.user.w / 2;
@@ -290,7 +300,6 @@ export default class GameController {
     this.enemies = this.enemies.filter(enemy => {
       // 敵の移動
       const isAlive = enemy.next();
-      if (!isAlive) console.log("enemy dead");
 
       // コリジョンチェック
       const isCollided = this.collisionCheck(this.user, enemy);
@@ -348,7 +357,7 @@ export default class GameController {
     this.ctx.fillStyle = "white";
     this.ctx.font = "16px Arial";
     this.ctx.textAlign = "left";
-    this.ctx.fillText(`Enemy: ${this.enemyAmount}`, 10, 40);
+    this.ctx.fillText(`Enemy: ${this.enemyAmount}`, 10, 50);
   }
 
   addScore(addScore: number) {

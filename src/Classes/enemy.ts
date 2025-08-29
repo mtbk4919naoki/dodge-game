@@ -14,10 +14,10 @@ export default class Enemy extends Entity {
     this.move(this.direction.x, this.direction.y);
     
     if (
-      this.x < this.ctx.canvas.width * -1 ||
-      this.x > this.ctx.canvas.width * 2 ||
-      this.y < this.ctx.canvas.height * -1 ||
-      this.y > this.ctx.canvas.height * 2
+      this.x < -100 ||
+      this.x > this.ctx.canvas.width + 100 ||
+      this.y < -100 ||
+      this.y > this.ctx.canvas.height + 100
     ) {
       return false;
     }
