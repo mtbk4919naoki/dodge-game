@@ -1,5 +1,8 @@
 # dodge-game
 
+## 公開ページ
+[https://nycreation.jp/dodge-game/](https://nycreation.jp/dodge-game/)
+
 ### src/Classes/entity.ts
 
 画像表示して動く要素の共通クラス
