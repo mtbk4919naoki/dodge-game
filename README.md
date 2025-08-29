@@ -1,3 +1,36 @@
+# dodge-game
+
+### src/Classes/entity.ts
+
+画像表示して動く要素の共通クラス
+
+- 画像を読み込む
+- 色をつける
+- 動く
+
+### src/Classes/enemy.ts
+
+敵クラス
+
+- 所定の方向に向かって動く
+
+### src/Classes/user.ts
+
+自機クラス
+
+- 狙った方向に移動する
+- 低速モード
+
+### src/Controller/gameController.ts
+
+ゲーム管理
+
+- ゲーム画面のレンダリング
+- ゲームのフェーズ管理
+- ゲームのスコア管理
+- 自機の生成
+- 敵の生成
+
 # Astro Starter Kit: Minimal
 
 ```sh
