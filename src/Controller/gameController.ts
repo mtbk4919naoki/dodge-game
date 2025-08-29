@@ -199,7 +199,7 @@ export default class GameController {
       const actualSpawnY = spawnY;
       const actualSpeedX = speed;
       const actualSpeedY = 0;
-      const enemy = new Enemy(this.ctx, {src: "/dodge-game/images/enemy.svg", w: size, h: size, colorEffect: "red"}, {x: actualSpeedX, y: actualSpeedY});
+      const enemy = new Enemy(this.ctx, {src: "/dodge-game/images/enemy.svg", w: size, h: size}, {x: actualSpeedX, y: actualSpeedY});
       enemy.spawn(actualSpawnX, actualSpawnY, {center: true});
       this.enemies.push(enemy);
       return enemy;
@@ -213,9 +213,11 @@ export default class GameController {
         return this.createRandomEnemy();
       }
       
-      let actualSpawnX = spawnX + offsetX * this.canvas.width;
-      let actualSpawnY = spawnY + offsetY * this.canvas.height;
+      // スポーン地点は8方向に散らす
+      let actualSpawnX = spawnX + offsetX * this.canvas.width + offsetX * size;
+      let actualSpawnY = spawnY + offsetY * this.canvas.height + offsetY * size;
   
+      // 角度計算
       const targetX = this.user.x + this.user.w / 2;
       const targetY = this.user.y + this.user.h / 2;
       const enemySpawnCenterX = actualSpawnX + size / 2;
@@ -225,12 +227,13 @@ export default class GameController {
       const dy = targetY - enemySpawnCenterY;
 
       const angle = Math.atan2(dy, dx);
-
-      console.log("target user", angle);
       
+      // 角度を速度にはめ込む
       const actualSpeedX = Math.cos(angle) * speed;
       const actualSpeedY = Math.sin(angle) * speed;
-      const enemy = new Enemy(this.ctx, {src: "/dodge-game/images/enemy.svg", w: size, h: size}, {x: actualSpeedX, y: actualSpeedY});
+      
+      // 自機狙いはオレンジ色にする
+      const enemy = new Enemy(this.ctx, {src: "/dodge-game/images/enemy.svg", w: size, h: size, colorEffect: "orange"}, {x: actualSpeedX, y: actualSpeedY});
       enemy.spawn(actualSpawnX, actualSpawnY, {center: true});
       this.enemies.push(enemy);
       return enemy;

@@ -14,6 +14,7 @@ export default class Entity {
     this.h = options.h;
     this.x = 0;
     this.y = 0;
+    this.colorEffect = options.colorEffect || null;
 
     this.image = new Image();
     this.image.onload = () => {
@@ -48,6 +49,7 @@ export default class Entity {
     
     this.ctx.drawImage(this.image, -this.w / 2, -this.h / 2, this.w, this.h);
 
+    // 色エフェクトを適用
     if (this.colorEffect) {
       this.ctx.globalCompositeOperation = "source-atop";
       this.ctx.fillStyle = this.colorEffect;
