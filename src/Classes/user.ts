@@ -3,7 +3,7 @@ import Entity from "./entity";
 export default class User extends Entity {
   private speed: number;
 
-  constructor(ctx: CanvasRenderingContext2D, options: {src: string, w: number, h: number}, unique: {speed: number}) {
+  constructor(ctx: CanvasRenderingContext2D, options: {src: string, w: number, h: number, colorEffect?: string}, unique: {speed: number}) {
     super(ctx, options);
     this.speed = unique.speed;
   }

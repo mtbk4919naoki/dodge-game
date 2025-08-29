@@ -156,16 +156,17 @@ export default class GameController {
     }
   }
 
-  createRandomEnemy() {
+  createRandomEnemy(): Enemy {
     const size = Math.floor(Math.random() * 40) + 20;
     const spawnX = Math.floor(Math.random() * this.canvas.width);
     const spawnY = Math.floor(Math.random() * this.canvas.height);
     const speed = Math.floor(Math.random() * 6 + 4);
-    const direction = Math.floor(Math.random() * 4);
+    const direction = Math.floor(Math.random() * 5); // 0-3 は直線、 4 は自機狙い
+
     if (direction === 0) {
       // top to bottom
       const actualSpawnX = spawnX;
-      const actualSpawnY = -1 * spawnY;
+      const actualSpawnY = -1 * spawnY - size;
       const actualSpeedX = 0;
       const actualSpeedY = speed;
       const enemy = new Enemy(this.ctx, {src: "/dodge-game/images/enemy.svg", w: size, h: size}, {x: actualSpeedX, y: actualSpeedY});
@@ -174,33 +175,64 @@ export default class GameController {
       return enemy;
     } else if (direction === 1) {
       // right to left
-      const actualSpawnX = spawnX + this.canvas.width;
+      const actualSpawnX = spawnX + this.canvas.width + size;
       const actualSpawnY = spawnY;
       const actualSpeedX = speed * -1;
       const actualSpeedY = 0;
       const enemy = new Enemy(this.ctx, {src: "/dodge-game/images/enemy.svg", w: size, h: size}, {x: actualSpeedX, y: actualSpeedY});
-      this.enemies.push(enemy);
       enemy.spawn(actualSpawnX, actualSpawnY, {center: true});
+      this.enemies.push(enemy);
       return enemy;
     } else if (direction === 2) {
       // bottom to top
       const actualSpawnX = spawnX;
-      const actualSpawnY = spawnY + this.canvas.height;
+      const actualSpawnY = spawnY + this.canvas.height + size; // 画面下の外側に確実にスポーン
       const actualSpeedX = 0;
       const actualSpeedY = speed * -1;
       const enemy = new Enemy(this.ctx, {src: "/dodge-game/images/enemy.svg", w: size, h: size}, {x: actualSpeedX, y: actualSpeedY});
       enemy.spawn(actualSpawnX, actualSpawnY, {center: true});
       this.enemies.push(enemy);
       return enemy;
-    } else {
+    } else if (direction === 4) {
       // left to right
-      const actualSpawnX = spawnX - this.canvas.width;
+      const actualSpawnX = spawnX - this.canvas.width - size;
       const actualSpawnY = spawnY;
       const actualSpeedX = speed;
       const actualSpeedY = 0;
-      const enemy = new Enemy(this.ctx, {src: "/dodge-game/images/enemy.svg", w: size, h: size}, {x: actualSpeedX, y: actualSpeedY});
-      this.enemies.push(enemy);
+      const enemy = new Enemy(this.ctx, {src: "/dodge-game/images/enemy.svg", w: size, h: size, colorEffect: "red"}, {x: actualSpeedX, y: actualSpeedY});
       enemy.spawn(actualSpawnX, actualSpawnY, {center: true});
+      this.enemies.push(enemy);
+      return enemy;
+    } else {
+      // target user
+      const offsetX = Math.floor(Math.random() * 2 - 1);
+      const offsetY = Math.floor(Math.random() * 2 - 1);
+
+      // 0,0の場合は再帰
+      if(offsetX === 0 && offsetY === 0) {
+        return this.createRandomEnemy();
+      }
+      
+      let actualSpawnX = spawnX + offsetX * this.canvas.width;
+      let actualSpawnY = spawnY + offsetY * this.canvas.height;
+  
+      const targetX = this.user.x + this.user.w / 2;
+      const targetY = this.user.y + this.user.h / 2;
+      const enemySpawnCenterX = actualSpawnX + size / 2;
+      const enemySpawnCenterY = actualSpawnY + size / 2;
+
+      const dx = targetX - enemySpawnCenterX;
+      const dy = targetY - enemySpawnCenterY;
+
+      const angle = Math.atan2(dy, dx);
+
+      console.log("target user", angle);
+      
+      const actualSpeedX = Math.cos(angle) * speed;
+      const actualSpeedY = Math.sin(angle) * speed;
+      const enemy = new Enemy(this.ctx, {src: "/dodge-game/images/enemy.svg", w: size, h: size}, {x: actualSpeedX, y: actualSpeedY});
+      enemy.spawn(actualSpawnX, actualSpawnY, {center: true});
+      this.enemies.push(enemy);
       return enemy;
     }
   }
@@ -271,35 +303,41 @@ export default class GameController {
   }
 
   showGameOver() {
+    // オーバーレイ
     this.ctx.fillStyle = "rgba(0, 0, 0, 0.66)";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
+    // Game Over
     this.ctx.fillStyle = "red";
     this.ctx.font = "48px Arial";
     this.ctx.textAlign = "center";
     this.ctx.fillText("Game Over", this.canvas.width / 2, this.canvas.height / 2);
 
+    // Press Any Key to Restart.
     this.ctx.fillStyle = "white";
     this.ctx.font = "20px Arial";
     this.ctx.textAlign = "center";
     this.ctx.fillText("Press Any Key to Restart.", this.canvas.width / 2, this.canvas.height / 2 + 60);
 
-
+    // Score
     this.ctx.fillStyle = "white";
     this.ctx.font = "24px Arial";
     this.ctx.textAlign = "center";
     this.ctx.fillText("Score: " + this.score, this.canvas.width / 2, this.canvas.height / 2 - 80);
 
-    new Promise<void>(resolve => {
-      const handleAnyKeydown = () => {
-        window.removeEventListener("keydown", handleAnyKeydown);
-        // playing modeで初期化するとreadyをスキップする
-        this.modeChange(MODES.PLAYING);
-        this.init();
-        resolve();
-      };
-      window.addEventListener("keydown", handleAnyKeydown);
-    });
+    // 1000ms後にリスタート可能にする
+    window.setTimeout(() => {
+      new Promise<void>(resolve => {
+        const handleAnyKeydown = () => {
+          window.removeEventListener("keydown", handleAnyKeydown);
+          // playing modeで初期化するとreadyをスキップする
+          this.modeChange(MODES.PLAYING);
+          this.init();
+          resolve();
+        };
+        window.addEventListener("keydown", handleAnyKeydown);
+      });
+    }, 1000);
   }
 
   showEnemyAmount() {

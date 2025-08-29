@@ -6,8 +6,10 @@ export default class Entity {
   public image: HTMLImageElement;
   public isLoaded: boolean = false;
   public rotation: number = 0;
+  public colorEffect: string | null = null; // 色エフェクトの種類
+  public effectIntensity: number = 1.0; // エフェクトの強度
 
-  constructor(public ctx: CanvasRenderingContext2D, public options: {src: string, w: number, h: number}) {
+  constructor(public ctx: CanvasRenderingContext2D, public options: {src: string, w: number, h: number, colorEffect?: string}) {
     this.w = options.w;
     this.h = options.h;
     this.x = 0;
@@ -39,14 +41,19 @@ export default class Entity {
     this.rotation = rotation;
   }
 
-  render(effect?: Function) {
+  render() {
     this.ctx.save();
     this.ctx.translate(this.x + this.w / 2, this.y + this.h / 2);
     this.ctx.rotate(this.rotation);
-    if(typeof effect === "function") {
-      effect(this);
-    }
+    
     this.ctx.drawImage(this.image, -this.w / 2, -this.h / 2, this.w, this.h);
+
+    if (this.colorEffect) {
+      this.ctx.globalCompositeOperation = "source-atop";
+      this.ctx.fillStyle = this.colorEffect;
+      this.ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
+    }
+
     this.ctx.restore();
   }
 
