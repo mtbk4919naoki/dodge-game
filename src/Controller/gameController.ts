@@ -2,6 +2,12 @@ import Entity from "../Classes/entity";
 import User from "../Classes/user";
 import Enemy from "../Classes/enemy";
 
+const MODES = {
+  READY: "ready",
+  PLAYING: "playing",
+  GAMEOVER: "gameover",
+} as const;
+
 export default class GameController {
   public canvas: HTMLCanvasElement;
   public ctx: CanvasRenderingContext2D;
@@ -23,10 +29,11 @@ export default class GameController {
   private enemyAmount: number = 20;
   public score: number = 0;
   private lastTime: number;
-  private gameOver: boolean = false;
+  private mode: typeof MODES[keyof typeof MODES];
 
   constructor() {
     this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
+    this.mode = MODES.READY;
     this.lastTime = performance.now();
     if (!this.canvas) {
       throw new Error("Canvas not found");
@@ -49,7 +56,6 @@ export default class GameController {
 
     // 設定値を初期化
     this.enemyAmount = 10;
-    this.gameOver = false;
     this.score = 0;
     this.enemies = [];
     this.lastTime = performance.now();
@@ -63,6 +69,9 @@ export default class GameController {
     
     // 画像を読み込む
     await this.loadImages([this.user]);
+    if (this.isMode(MODES.READY)) {
+      await this.ready();
+    }
     this.start();
   }
 
@@ -74,9 +83,34 @@ export default class GameController {
     console.log("loadImages done");
   }
 
-  start = () => {
+  /**
+   * ゲーム開始前の準備
+   */
+  async ready() {
+    console.log("ready");
+
+    this.modeChange(MODES.READY);
+    this.ctx.fillStyle = "white";
+    this.ctx.font = "24px Arial";
+    this.ctx.textAlign = "center";
+    this.ctx.fillText("Press Any Key to Start.", this.canvas.width / 2, this.canvas.height / 2);
+
+    await new Promise<void>(resolve => {
+      const handleAnyKeydown = () => {
+        window.removeEventListener("keydown", handleAnyKeydown);
+        resolve();
+      };
+      window.addEventListener("keydown", handleAnyKeydown);
+    });
+  }
+
+  /**
+   * ゲーム開始
+   */
+  start() {
     console.log("start");
 
+    this.modeChange(MODES.PLAYING);
     window.addEventListener("keydown", this.handleKeydown.bind(this));
     window.addEventListener("keyup", this.handleKeyup.bind(this));
     this.user.spawn(this.canvas.width / 2, this.canvas.height / 2, {center: true});
@@ -183,7 +217,7 @@ export default class GameController {
     const distance = Math.sqrt(dx * dx + dy * dy);
     
     // シフトキーを押している場合は、接触判定を小さくする
-    const size = (e1.w / 2 + e2.w / 2) / (this.keydown.Shift ? 2 : 1);
+    const size = (e1.w / 3 + e2.w / 3) / (this.keydown.Shift ? 2 : 1);
     return distance < size;
   }
 
@@ -198,7 +232,7 @@ export default class GameController {
     }
     
     // ゲームオーバーしていたら終了
-    if (this.gameOver) return;
+    if (this.isMode(MODES.GAMEOVER)) return;
 
     // 次のフレームを予約
     requestAnimationFrame(this.animate.bind(this));
@@ -226,7 +260,7 @@ export default class GameController {
       const isCollided = this.collisionCheck(this.user, enemy);
       if (isCollided) {
         console.log("collided");
-        this.gameOver = true;
+        this.modeChange(MODES.GAMEOVER);
       }
 
       return isAlive;
@@ -237,10 +271,35 @@ export default class GameController {
   }
 
   showGameOver() {
+    this.ctx.fillStyle = "rgba(0, 0, 0, 0.66)";
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
     this.ctx.fillStyle = "red";
     this.ctx.font = "48px Arial";
     this.ctx.textAlign = "center";
     this.ctx.fillText("Game Over", this.canvas.width / 2, this.canvas.height / 2);
+
+    this.ctx.fillStyle = "white";
+    this.ctx.font = "20px Arial";
+    this.ctx.textAlign = "center";
+    this.ctx.fillText("Press Any Key to Restart.", this.canvas.width / 2, this.canvas.height / 2 + 60);
+
+
+    this.ctx.fillStyle = "white";
+    this.ctx.font = "24px Arial";
+    this.ctx.textAlign = "center";
+    this.ctx.fillText("Score: " + this.score, this.canvas.width / 2, this.canvas.height / 2 - 80);
+
+    new Promise<void>(resolve => {
+      const handleAnyKeydown = () => {
+        window.removeEventListener("keydown", handleAnyKeydown);
+        // playing modeで初期化するとreadyをスキップする
+        this.modeChange(MODES.PLAYING);
+        this.init();
+        resolve();
+      };
+      window.addEventListener("keydown", handleAnyKeydown);
+    });
   }
 
   showEnemyAmount() {
@@ -256,6 +315,14 @@ export default class GameController {
     this.ctx.font = "16px Arial";
     this.ctx.textAlign = "left";
     this.ctx.fillText(`Score: ${this.score}`, 10, 20);
+  }
+
+  isMode(mode: typeof MODES[keyof typeof MODES]) {
+    return this.mode === mode;
+  }
+
+  modeChange(mode: typeof MODES[keyof typeof MODES]) {
+    this.mode = mode;
   }
 
   render() {
@@ -285,7 +352,7 @@ export default class GameController {
     this.showEnemyAmount();
 
     // ゲームーオーバー表示
-    if (this.gameOver) {
+    if (this.isMode(MODES.GAMEOVER)) {
       this.showGameOver();
     }
   }
