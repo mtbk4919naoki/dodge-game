@@ -9,6 +9,8 @@ export default class User extends Entity {
   }
 
   walk({shift, up, down, left, right}: {shift: boolean, up: boolean, down: boolean, left: boolean, right: boolean}) {
+    const exX = this.x;
+    const exY = this.y;
     if (up) {
       this.move(0, -1* this.speed / (shift ? 2 : 1));
     }
@@ -20,6 +22,16 @@ export default class User extends Entity {
     }
     if (right) {
       this.move(1 * this.speed / (shift ? 2 : 1), 0);
+    }
+    // 画面外に出たら戻す
+    if (
+      this.x < 0||
+      this.x > this.ctx.canvas.width - this.w ||
+      this.y < 0 ||
+      this.y > this.ctx.canvas.height - this.h
+    ) {
+      this.x = exX;
+      this.y = exY;
     }
   }
 }
