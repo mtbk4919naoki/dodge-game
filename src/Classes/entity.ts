@@ -47,7 +47,6 @@ export default class Entity {
     this.ctx.translate(this.x + this.w / 2, this.y + this.h / 2);
     this.ctx.rotate(this.rotation);
     if (typeof callback === "function") {
-      console.log("callback");
       callback(this);
     }
     
