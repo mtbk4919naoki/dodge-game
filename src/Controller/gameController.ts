@@ -44,7 +44,7 @@ export default class GameController {
       throw new Error("Canvas context not found");
     }
 
-    this.user = new User(this.ctx, {src: "/dodge-game/images/self.svg", w: 40, h: 40}, {speed: 8});
+    this.user = new User(this.ctx, {src: "/dodge-game/images/self.svg", w: 40, h: 40, colorEffect: "aqua"}, {speed: 8});
   }
 
   async init() {
