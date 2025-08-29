@@ -93,7 +93,7 @@ export default class GameController {
     this.ctx.fillStyle = "white";
     this.ctx.font = "24px Arial";
     this.ctx.textAlign = "center";
-    this.ctx.fillText("Press Any Key to Start.", this.canvas.width / 2, this.canvas.height / 2);
+    this.ctx.fillText("Press any key to start.", this.canvas.width / 2, this.canvas.height / 2);
 
     await new Promise<void>(resolve => {
       const handleAnyKeydown = () => {
@@ -315,13 +315,13 @@ export default class GameController {
     this.ctx.fillStyle = "red";
     this.ctx.font = "48px Arial";
     this.ctx.textAlign = "center";
-    this.ctx.fillText("Game Over", this.canvas.width / 2, this.canvas.height / 2);
+    this.ctx.fillText("Game over", this.canvas.width / 2, this.canvas.height / 2);
 
-    // Press Any Key to Restart.
+    // Press any key to restart.
     this.ctx.fillStyle = "white";
     this.ctx.font = "20px Arial";
     this.ctx.textAlign = "center";
-    this.ctx.fillText("Press Any Key to Restart.", this.canvas.width / 2, this.canvas.height / 2 + 60);
+    this.ctx.fillText("Press any key to restart.", this.canvas.width / 2, this.canvas.height / 2 + 60);
 
     // Score
     this.ctx.fillStyle = "white";
