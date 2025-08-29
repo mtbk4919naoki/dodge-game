@@ -193,7 +193,7 @@ export default class GameController {
       enemy.spawn(actualSpawnX, actualSpawnY, {center: true});
       this.enemies.push(enemy);
       return enemy;
-    } else if (direction === 4) {
+    } else if (direction === 3) {
       // left to right
       const actualSpawnX = spawnX - this.canvas.width - size;
       const actualSpawnY = spawnY;
@@ -205,8 +205,9 @@ export default class GameController {
       return enemy;
     } else {
       // target user
-      const offsetX = Math.floor(Math.random() * 2 - 1);
-      const offsetY = Math.floor(Math.random() * 2 - 1);
+      // 8方向からランダムに選択（-1, 0, 1の組み合わせ）
+      const offsetX = Math.floor(Math.random() * 3) - 1; // -1, 0, 1
+      const offsetY = Math.floor(Math.random() * 3) - 1; // -1, 0, 1
 
       // 0,0の場合は再帰
       if(offsetX === 0 && offsetY === 0) {
